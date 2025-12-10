@@ -18,6 +18,7 @@
   --notice-board-bg: url("@/assets/【哲风壁纸】兽耳娘-动漫.png");
   --textarea-bg: url("@/assets/【哲风壁纸】二次元-兽耳娘-动漫.png");
   --textarea-color: #ffffff;
+  --timeline: rgba(255, 255, 255, 0.08);
 }
 
 body.dark {
@@ -36,6 +37,7 @@ body.dark {
   --notice-board-bg: url("@/assets/【哲风壁纸】亮色对比-动漫角色.png");
   --textarea-bg:url("@/assets/【哲风壁纸】02-DarlingintheFranxx.png");
   --textarea-color: #000000;
+  --timeline: rgba(0, 0, 0, 0.08);
 }
 
 body {
