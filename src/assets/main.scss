@@ -1,0 +1,223 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #ffffff;
+  --text: #1f1f1f;
+  --muted: #8f8f8f;
+  --nav-bg: rgba(255, 255, 255, 0.7);
+  --card-bg: #ffffff;
+  --border: rgba(0, 0, 0, 0.08);
+  --accent: #824af1;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --wave1: rgba(255, 255, 255, 0.58);
+  --wave2: rgba(255, 255, 255);
+  --notice-board-bg: url("@/assets/【哲风壁纸】兽耳娘-动漫.png");
+  --textarea-bg: url("@/assets/【哲风壁纸】二次元-兽耳娘-动漫.png");
+  --textarea-color: #ffffff;
+}
+
+body.dark {
+  --bg: #0d0f1a;
+  --text: #e6e8ef;
+  --muted: #aeb4c6;
+  --nav-bg: rgba(18, 22, 38, 0.9);
+  --card-bg: #161b2c;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #a78bfa;
+  --shadow: rgba(0, 0, 0, 0.45);
+  background-color: var(--bg);
+  color: var(--text);
+  --wave1: rgba(19, 19, 19, 0.58);
+  --wave2: rgb(30, 30, 30);
+  --notice-board-bg: url("@/assets/【哲风壁纸】亮色对比-动漫角色.png");
+  --textarea-bg:url("@/assets/【哲风壁纸】02-DarlingintheFranxx.png");
+  --textarea-color: #000000;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 全局滚动条样式修改 */
+/* 滚动条轨道 */
+::-webkit-scrollbar {
+  width: 8px;
+  /* 垂直滚动条宽度 */
+  height: 8px;
+  /* 水平滚动条高度 */
+}
+
+/* 滚动条轨道背景 */
+::-webkit-scrollbar-track {
+  background: var(--card-bg);
+  border-radius: 4px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(60deg, rgb(228, 165, 222) 0%, rgb(190, 95, 213) 100%);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+/* 滚动条滑块悬停状态 */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(60deg, rgb(228, 165, 222) 0%, rgb(190, 95, 213) 100%);
+}
+
+/* 滚动条两端的按钮（上下箭头） */
+::-webkit-scrollbar-button {
+  display: none;
+  /* 隐藏默认按钮 */
+}
+
+/* 解决页面角落处的样式问题 */
+::-webkit-scrollbar-corner {
+  background: linear-gradient(60deg, rgb(228, 165, 222) 0%, rgb(190, 95, 213) 100%);
+}
+
+/* 为特定容器定制滚动条（可选） */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(60deg, rgb(228, 165, 222) 0%, rgb(190, 95, 213) 100%);
+}
+
+/* 苹果风格代码高亮代码高亮样式 */
+.article-content-text pre {
+  /* 基础样式 */
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.2em;
+  margin: 1.5em 0;
+  overflow-x: auto;
+  font-family: "SF Mono", "Menlo", "Consolas", monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+
+  /* 苹果风格阴影 */
+  box-shadow: 0 1px 3px var(--shadow),
+    0 4px 6px var(--shadow);
+
+  /* 滚动条美化 */
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f3f4f6;
+}
+
+.article-content-text pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+.article-content-text pre::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 3px;
+}
+
+.article-content-text pre::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 3px;
+}
+
+/* 代码高亮配色 - 苹果风格浅色主题 */
+.article-content-text .hljs-keyword {
+  color: #0066cc;
+  font-weight: 500;
+}
+
+.article-content-text .hljs-string {
+  color: #008000;
+}
+
+.article-content-text .hljs-comment {
+  color: #6e7781;
+  font-style: italic;
+}
+
+.article-content-text .hljs-number {
+  color: #aa5d00;
+}
+
+.article-content-text .hljs-function {
+  color: #af52de;
+}
+
+.article-content-text .hljs-variable {
+  color: #e25950;
+}
+
+.article-content-text .hljs-type {
+  color: #5e6ad2;
+}
+
+.article-content-text .hljs-parameter {
+  color: #005cc5;
+}
+
+.article-content-text .hljs-property {
+  color: #0066cc;
+}
+
+.article-content-text .hljs-punctuation {
+  color: #374151;
+}
+
+/* 行号样式（如果使用了行号插件） */
+.article-content-text .hljs-line-numbers {
+  border-right: 1px solid #e5e7eb;
+  padding-right: 1em;
+  margin-right: 1em;
+  color: #9ca3af;
+  user-select: none;
+}
+
+/* 代码块悬停效果 */
+.article-content-text pre:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+/* 适配 Quill 编辑器中的图片 */
+:deep(.ql-editor img) {
+  /* 图片最大宽度为容器的100%，防止溢出 */
+  max-width: 100%;
+  /* 高度自动，保持图片比例 */
+  height: auto;
+  /* 居中显示 */
+  display: block;
+  margin: 1rem auto;
+  /* 上下留出间距，左右自动居中 */
+  /* 可选：添加轻微阴影和圆角，增强视觉效果 */
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* 可选：添加过渡动画，鼠标悬停时轻微放大 */
+  transition: transform 0.3s ease;
+}
+
+/* 鼠标悬停效果（可选） */
+:deep(.ql-editor img:hover) {
+  transform: scale(1.02);
+}
+
+/* 适配文章内容区域的图片（编辑器内容渲染到页面后） */
+.article-content-text img {
+  cursor: pointer;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.article-content-text img:hover {
+  transform: scale(1.02);
+}

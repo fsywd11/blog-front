@@ -1,0 +1,372 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// 根容器
+.app-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column; // 关键：纵向排列子元素
+  background-color: #000;
+}
+
+// 头部样式（核心修复）
+.page-header {
+  width: 100%;
+  color: #fff;
+  // 移除固定高度限制，让内容决定高度
+  background-color: var(--card-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 100; // 确保在内容上方
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.banner-card {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  text-align: center;
+  padding: 40px 20px;
+  transition: all 0.3s ease;
+  margin: 0; // 移除Element默认margin
+}
+
+// 滚动时头部变化
+.banner-card.scrolled {
+  padding: 20px 20px;
+  background: var(--card-bg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.banner-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.banner-subtitle {
+  font-size: 1rem;
+  color: var(--text);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+// 主内容区（关键修复：flex填充剩余空间，不挤压header）
+.main-content {
+  flex: 1; // 占据剩余空间
+  width: 100%;
+  padding: 0;
+  background-color: #0f0f1a;
+}
+
+// 加载状态
+.loading-state {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f0f1a;
+  color: #888;
+}
+
+.loading-text {
+  font-size: 1rem;
+}
+
+// 时间轴容器
+.timeline-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  transition: background-image 1s ease-in-out;
+  padding: 60px 0;
+}
+
+.timeline-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--border);
+  z-index: 1;
+}
+
+.timeline-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+// 年份标题
+.year-title {
+  position: relative;
+  margin: 60px 0 40px;
+  text-align: center;
+}
+
+.year-text {
+  display: inline-block;
+  background-color: #fff;
+  color: #1a1a2e;
+  font-size: 1.8rem;
+  font-weight: 600;
+  padding: 8px 30px;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+// 文章组容器
+.articles-group {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.articles-group::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(to bottom, #4a69bd, #2c3e50);
+  transform: translateX(-50%);
+  display: none;
+}
+
+// 时间轴项
+.timeline-item {
+  margin-bottom: 30px;
+  opacity: 0.6;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.timeline-item.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+// 文章卡片
+.article-card {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin: 0; // 移除Element默认margin
+}
+
+.article-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.article-content {
+  display: flex;
+  flex-direction: row;
+}
+
+.article-img {
+  width: 180px;
+  height: 140px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.article-info {
+  padding: 20px;
+  color: #fff;
+  flex: 1;
+}
+
+.article-title {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.article-date {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.article-desc {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 空状态
+.empty-state {
+  text-align: center;
+  padding: 100px 20px;
+  color: #888;
+}
+
+/* 桌面端样式 */
+@media (min-width: 768px) {
+  .articles-group::before {
+    display: block;
+  }
+
+  .timeline-item {
+    width: 48%;
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  .timeline-item:nth-child(odd) {
+    margin-right: auto;
+  }
+
+  .timeline-item:nth-child(even) {
+    margin-left: auto;
+  }
+
+  .timeline-item:nth-child(odd)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: #4a69bd;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+    box-shadow: 0 0 10px rgba(74, 105, 189, 0.8);
+  }
+
+  .timeline-item:nth-child(even)::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background: #2c3e50;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(44, 62, 80, 0.8);
+  }
+
+  .article-card:hover .article-img {
+    transform: scale(1.05);
+    transition: transform 0.5s ease;
+  }
+
+  .article-title:hover {
+    color: #4a90e2;
+    transition: color 0.3s ease;
+  }
+}
+
+/* 移动端样式（768px以下） */
+@media (max-width: 767px) {
+
+  /* 头部调整 */
+  .banner-title {
+    font-size: 2rem;
+  }
+
+  .banner-subtitle {
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
+  /* 年份标题调整 */
+  .year-text {
+    font-size: 1.5rem;
+    padding: 6px 20px;
+  }
+
+  /* 文章内容布局改为垂直排列 */
+  .article-content {
+    flex-direction: column;
+  }
+
+  /* 图片占满宽度 */
+  .article-img {
+    width: 100%;
+    height: 180px;
+    border-radius: 10px 10px 0 0;
+  }
+
+  /* 信息区调整 */
+  .article-info {
+    padding: 15px;
+  }
+
+  .article-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .article-desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* 激活项动画调整 */
+  .timeline-item.active {
+    transform: translateY(0) scale(1.02);
+  }
+
+  /* 时间轴项宽度占满 */
+  .timeline-item {
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  /* 移除移动端指示点（避免拥挤） */
+  .timeline-item::after {
+    display: none !important;
+  }
+}
+
+/* 超小屏适配（480px以下） */
+@media (max-width: 480px) {
+  .banner-card {
+    padding: 30px 10px;
+  }
+
+  .banner-title {
+    font-size: 1.8rem;
+  }
+
+  .article-img {
+    height: 150px;
+  }
+
+  .year-title {
+    margin: 40px 0 20px;
+  }
+
+  .timeline-container {
+    padding: 40px 0;
+  }
+}
