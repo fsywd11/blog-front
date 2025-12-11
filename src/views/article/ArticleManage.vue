@@ -242,6 +242,23 @@ const clearData = ()=>{
   // 扩展id属性，将来需要传递给后台，完成分类的修改
   articleModel.value.id = ''
 }
+import {onMounted,onUnmounted} from "vue";
+
+const drawerSize = ref('50%')
+
+// 监听窗口大小变化
+const handleResize = () => {
+  drawerSize.value = window.innerWidth < 768 ? '100%' : '50%'
+}
+
+onMounted(() => {
+  handleResize()
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
@@ -334,7 +351,7 @@ const clearData = ()=>{
                    @size-change="onSizeChange"
                    @current-change="onCurrentChange" style="margin-top: 20px; justify-content: flex-end"/>
     <!-- 抽屉 -->
-    <el-drawer v-model="visibleDrawer" :title="title" direction="rtl" size="50%">
+    <el-drawer v-model="visibleDrawer" :title="title" direction="rtl" :size=drawerSize>
       <!-- 添加文章表单 -->
       <el-form :model="articleModel" label-width="100px">
         <el-form-item label="文章标题">
@@ -355,7 +372,7 @@ const clearData = ()=>{
                             }"
                      :on-success="uploadSuccess"
           >
-            <img v-if="articleModel.coverImg" :src="articleModel.coverImg" class="avatar" alt="图片加载中"/>
+            <img v-if="articleModel.coverImg" :src="articleModel.coverImg" class="avatar" alt="图片加载中" :style="{ objectFit: 'cover' }"/>
             <el-icon v-else class="avatar-uploader-icon">
               <Plus/>
             </el-icon>

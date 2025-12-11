@@ -51,7 +51,7 @@ const updateAvatar = async () => {
             }"
             :on-success="uploadSuccess"
         >
-          <img v-if="imgUrl" :src="imgUrl" class="avatar" alt=""/>
+          <img v-if="imgUrl" :src="imgUrl" class="avatar" alt="" :style="{ objectFit: 'cover' }"/>
           <img v-else :src="avatar" width="278" alt=""/>
         </el-upload>
         <br />
