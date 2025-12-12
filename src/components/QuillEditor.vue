@@ -1,73 +1,50 @@
 <template>
   <div class="editor-container">
-    <!-- 模式切换工具栏 -->
-    <div class="mode-switch">
-      <el-radio-group v-model="editorMode" size="small">
-        <el-radio label="edit">纯编辑</el-radio>
-        <el-radio label="preview">纯预览</el-radio>
-        <el-radio label="split">编辑/预览</el-radio>
-      </el-radio-group>
-    </div>
-
-    <!-- 编辑器与预览区域容器 -->
+    <!-- md-editor-v3 编辑器容器（根据模式控制显示） -->
     <div class="editor-preview-wrapper" :class="editorMode">
       <!-- 编辑区域（纯编辑/分栏模式显示） -->
       <div class="edit-area" v-show="editorMode !== 'preview'">
-        <quill-editor
-            theme="snow"
-            v-model:content="editorContent"
-            contentType="html"
-            :options="editorOptions"
-            @update:content="handleContentChange"
-            :disabled="loading || editorMode === 'preview'"
+        <MdEditor
+            ref="editorRef"
+            v-model="editorContent"
+            theme="light"
+            previewTheme="github"
+            codeTheme="github"
+            :placeholder="props.placeholder"
+            :disabled="props.loading || editorMode === 'preview'"
+            :onUploadImg="handleUploadImg"
+            :height="editAreaHeight"
         />
-      </div>
-
-      <!-- 预览区域（纯预览/分栏模式显示） -->
-      <div class="preview-area" v-show="editorMode !== 'edit'">
-        <div class="preview-content" v-html="previewHtml"></div>
       </div>
     </div>
 
     <!-- 可选：Markdown 提示 -->
-    <div v-if="showMarkdownTip" class="markdown-tip">
+    <div v-if="props.showMarkdownTip" class="markdown-tip">
       <el-tag size="small" type="info">支持 Markdown 语法</el-tag>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, defineProps, defineEmits, computed, onMounted, onUnmounted } from 'vue'
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import ImageUploader from 'quill-image-uploader'
-import Quill from 'quill'
-import { useTokenStore } from '@/stores/token.js'
-import { ElMessage } from 'element-plus'
-// 新增：Markdown 解析、代码高亮、剪贴板
-import { marked } from 'marked'
-import hljs from 'highlight.js'
+// 导入 md-editor-v3 核心组件和样式
+import { MdEditor } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+// 保留原有的代码高亮、剪贴板、消息提示
 import ClipboardJS from 'clipboard'
-import 'highlight.js/styles/github.css' // 代码高亮样式
-// 可选：引入更多代码语言支持（按需添加）
-// import hljsDefineVue from 'highlight.js/lib/languages/vue'
+import { ElMessage } from 'element-plus'
+import { useTokenStore } from '@/stores/token.js'
+import 'highlight.js/styles/github.css'
 
-// 注册图片上传模块
-Quill.register('modules/imageUploader', ImageUploader)
-
-// 定义Props
+// 定义Props（与原Quill组件保持一致）
 const props = defineProps({
   modelValue: {
     type: String,
     default: ''
   },
-  customOptions: {
-    type: Object,
-    default: () => ({})
-  },
   height: {
     type: [String, Number],
-    default: 500 // 调整高度适配分栏
+    default: 500
   },
   loading: {
     type: Boolean,
@@ -83,20 +60,19 @@ const props = defineProps({
   }
 })
 
-// 定义Emits
-const emit = defineEmits(['update:modelValue', 'content-change'])
+// 定义Emits（与原组件保持一致）
+const emit = defineEmits(['update:modelValue', 'content-change', 'save'])
 
-// Token存储
+// Token存储（复用图片上传的token逻辑）
 const tokenStore = useTokenStore()
 
-// 编辑器内容
+// 编辑器核心数据
 const editorContent = ref(props.modelValue)
-// 编辑器模式：edit(纯编辑) / preview(纯预览) / split(分栏)
-const editorMode = ref('edit')
-// 剪贴板实例
-let clipboardInstance = null
+const editorMode = ref('edit') // edit/preview/split
+const editorRef = ref<InstanceType<typeof MdEditor> | null>(null)
+let clipboardInstance: ClipboardJS | null = null
 
-// 监听父组件传入值变化
+// 监听父组件传入值变化（双向绑定）
 watch(
     () => props.modelValue,
     (newVal) => {
@@ -105,31 +81,27 @@ watch(
     { immediate: true }
 )
 
-// 配置 marked + highlight.js
+// 监听编辑器内容变化，向父组件派发事件
+watch(
+    () => editorContent.value,
+    (newVal) => {
+      emit('update:modelValue', newVal)
+      emit('content-change', newVal)
+    }
+)
+
+// 配置marked+highlight.js（复用原预览高亮逻辑）
 onMounted(() => {
-  // 配置 marked 渲染（代码高亮）
-  marked.setOptions({
-    highlight: (code, lang) => {
-      if (lang && hljs.getLanguage(lang)) {
-        // 有指定语言则高亮对应语言
-        return hljs.highlight(code, { language: lang }).value
-      }
-      // 无指定语言则自动识别
-      return hljs.highlightAuto(code).value
-    },
-    breaks: true, // 换行符转换为 <br>
-    gfm: true // 支持 GitHub 风格的 Markdown
-  })
+  // 配置marked渲染（代码高亮）
 
   // 初始化剪贴板（代码复制功能）
   clipboardInstance = new ClipboardJS('.copy-btn', {
     text: (trigger) => {
-      // 获取对应代码块的内容
-      return trigger.previousElementSibling.textContent
+      return trigger.previousElementSibling?.textContent || ''
     }
   })
 
-  // 剪贴板成功/失败回调
+  // 剪贴板回调
   clipboardInstance.on('success', () => {
     ElMessage.success('代码复制成功')
   })
@@ -138,113 +110,82 @@ onMounted(() => {
   })
 })
 
-// 组件卸载时销毁剪贴板实例
+// 组件卸载时销毁剪贴板
 onUnmounted(() => {
   if (clipboardInstance) {
     clipboardInstance.destroy()
   }
 })
 
-// 解析后的预览 HTML（添加代码复制按钮）
-const previewHtml = computed(() => {
-  if (!editorContent.value) {
-    return '<div class="empty-preview">暂无内容</div>'
-  }
-
-  // 第一步：解析 Markdown 为 HTML
-  let html = marked.parse(editorContent.value)
-
-  // 第二步：为代码块添加复制按钮（替换<pre>标签）
-  html = html.replace(
-      /<pre><code class="(.*?)">([\s\S]*?)<\/code><\/pre>/g,
-      '<div class="code-block-wrapper"><pre><code class="$1">$2</code></pre><button class="copy-btn" data-clipboard-snippet>复制代码</button></div>'
-  )
-
-  return html
+// 计算属性：编辑区域高度（适配分栏/全屏模式）
+const editAreaHeight = computed(() => {
+  // 减去工具栏和间距的高度，与原样式保持一致
+  return `calc(100% - 40px)`
 })
+// 图片上传逻辑（复用原Quill的上传逻辑，适配md-editor-v3的API）
+const handleUploadImg = async (files: File[], callback: (urls: string[]) => void) => {
+  try {
+    const urls: string[] = []
+    for (const file of files) {
+      const res = await uploadFile(file)
+      urls.push(res)
+    }
+    callback(urls)
+  } catch (error) {
+    ElMessage.error('图片上传失败')
+    callback([])
+  }
+}
 
-// 编辑器配置
-const editorOptions = computed(() => {
-  const defaultOptions = {
-    modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],
-        ['blockquote', 'code-block'],
-        [{ header: 1 }, { header: 2 }],
-        [{ list: 'ordered' }, { list: 'bullet' }],
-        ['link', 'image'],
-        ['clean']
-      ],
-      imageUploader: {
-        upload: (file) => {
-          return new Promise((resolve, reject) => {
-            const formData = new FormData()
-            formData.append('file', file)
-            const xhr = new XMLHttpRequest()
-            xhr.open('POST', 'http://localhost:8080/upload', true)
-            xhr.setRequestHeader('Authorization', tokenStore.token)
-            xhr.onload = () => {
-              if (xhr.status === 200) {
-                try {
-                  const response = JSON.parse(xhr.responseText)
-                  resolve(response.data)
-                } catch (error) {
-                  ElMessage.error('图片上传失败')
-                  reject(new Error('图片上传失败'))
-                }
-              } else {
-                ElMessage.error('图片上传失败')
-                reject(new Error('图片上传失败'))
-              }
-            }
-            xhr.onerror = () => {
-              ElMessage.error('图片上传失败')
-              reject(new Error('图片上传失败'))
-            }
-            xhr.send(formData)
-          })
+// 图片上传核心方法（复用原XHR逻辑）
+const uploadFile = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', 'http://localhost:8080/upload', true)
+    xhr.setRequestHeader('Authorization', tokenStore.token)
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText)
+          resolve(response.data)
+        } catch (error) {
+          reject(new Error('解析上传结果失败'))
         }
+      } else {
+        reject(new Error('上传请求失败'))
       }
-    },
-    theme: 'snow',
-    formats: [
-      'bold', 'italic', 'underline', 'strike',
-      'blockquote', 'code-block',
-      'header', 'list', 'bullet',
-      'link', 'image',
-      'clean', 'align', 'color', 'background',
-      'size', 'font'
-    ],
-    placeholder: props.placeholder
-  }
+    }
 
-  return { ...defaultOptions, ...props.customOptions }
-})
+    xhr.onerror = () => {
+      reject(new Error('网络错误'))
+    }
 
-// 内容变化回调
-const handleContentChange = () => {
-  emit('update:modelValue', editorContent.value)
-  emit('content-change', editorContent.value)
+    xhr.send(formData)
+  })
 }
 </script>
 
 <style lang="scss" scoped>
 .editor-container {
   width: 100%;
-  height: v-bind(height + 'px');
+  height: 70vh;
   padding: 10px;
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
 
-  // 模式切换工具栏样式
+  // 模式切换工具栏样式（复用原样式）
   .mode-switch {
     margin-bottom: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #e5e7eb;
   }
 
-  // 编辑器与预览区域容器
+  // 编辑器与预览区域容器（复用原样式逻辑）
   .editor-preview-wrapper {
     width: 100%;
     height: calc(100% - 40px);
@@ -279,38 +220,34 @@ const handleContentChange = () => {
     }
   }
 
-  // 编辑区域样式
+  // 编辑区域样式（适配md-editor-v3）
   .edit-area {
     height: 100%;
     overflow: hidden;
 
-    :deep(.ql-editor) {
-      min-height: calc(100% - 40px);
-      max-height: calc(100% - 40px);
-      white-space: pre-wrap;
-      color: #000000;
-      overflow-y: auto;
+    :deep(.md-editor) {
+      height: 100% !important;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
     }
 
-    :deep(.ql-toolbar) {
+    :deep(.md-editor-toolbar) {
       border-bottom: 1px solid #e5e7eb;
       border-radius: 4px 4px 0 0;
     }
 
-    :deep(.ql-container) {
-      border: 1px solid #e5e7eb;
-      border-top: none;
-      border-radius: 0 0 4px 4px;
-      height: 100%;
+    :deep(.md-editor-content) {
+      height: calc(100% - 40px) !important;
     }
 
-    :deep(.ql-editor.ql-blank::before) {
-      color: #999;
-      font-style: normal;
+    // 禁用状态样式
+    :deep(.md-editor-disabled) {
+      background-color: rgba(245, 245, 245, 0.5);
+      cursor: not-allowed;
     }
   }
 
-  // 预览区域样式
+  // 预览区域样式（完全复用原样式）
   .preview-area {
     height: 100%;
     padding: 15px;
@@ -332,7 +269,7 @@ const handleContentChange = () => {
         padding: 20px;
       }
 
-      // Markdown 样式适配
+      // Markdown 样式适配（复用原样式）
       h1, h2, h3, h4, h5, h6 {
         margin: 16px 0;
         font-weight: 600;
@@ -368,12 +305,11 @@ const handleContentChange = () => {
         }
       }
 
-      // 代码块容器（包含复制按钮）
+      // 代码块容器（包含复制按钮，复用原样式）
       .code-block-wrapper {
         position: relative;
         margin: 16px 0;
 
-        // 复制按钮样式
         .copy-btn {
           position: absolute;
           top: 8px;
@@ -393,7 +329,6 @@ const handleContentChange = () => {
           }
         }
 
-        // 代码块样式
         pre {
           margin: 0;
           padding: 16px;
@@ -410,6 +345,7 @@ const handleContentChange = () => {
     }
   }
 
+  // Markdown提示样式（复用原样式）
   .markdown-tip {
     position: absolute;
     top: 10px;
@@ -418,11 +354,5 @@ const handleContentChange = () => {
     background: #fff;
     padding: 0 4px;
   }
-}
-
-// 加载状态遮罩
-:deep(.ql-editor[contenteditable="false"]) {
-  background-color: rgba(245, 245, 245, 0.5);
-  cursor: not-allowed;
 }
 </style>

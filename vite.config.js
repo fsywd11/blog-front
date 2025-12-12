@@ -12,9 +12,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+
  /* //跨域问题，由前端将路径映射到后端
   server: {
     proxy: {

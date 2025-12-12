@@ -12,6 +12,8 @@ import VueLazyload from 'vue-lazyload';
 import loadingImage from '@/assets/【哲风壁纸】我妻善逸-鬼灭之刃.png'
 import './assets/iconfont/iconfont.js';
 import VueAudioBetter from 'vue-audio-better'
+
+import 'md-editor-v3/lib/style.css'
 const app=createApp(App)
 const persist = createPersistedState()
 const pinia=createPinia()

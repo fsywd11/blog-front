@@ -2,7 +2,6 @@
 import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue';
 import HomeRight from '@/components/homeRight.vue';
 import { useRoute } from 'vue-router';
-import articleInfoStore from '@/stores/ArticleInfo.js';
 import Footer from "@/components/footer.vue";
 import { ElMessage } from 'element-plus';
 import Comment from "@/components/Comment.vue";
@@ -13,8 +12,8 @@ import { articleCollectListService, articleLikeListService } from "@/api/likeCol
 // 引入代码高亮库
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
+import MarkdownDisplay from "@/components/MarkdownDisplay.vue";
 
-const articleInfo = articleInfoStore();
 const loading = ref(false);
 // 获取当前路由信息
 const route = useRoute();
@@ -109,7 +108,7 @@ const findNextPublishedArticle = async () => {
   // 设置一个合理的上限，避免无限循环
   const maxCheckCount = 100;
   let checkCount = 0;
-  
+
   while (checkCount < maxCheckCount) {
     try {
       const res = await articleInfoById(nextId);
@@ -133,14 +132,6 @@ const nextArticleId = ref(null);
 const updateAdjacentArticles = async () => {
   previousArticleId.value = await findPreviousPublishedArticle();
   nextArticleId.value = await findNextPublishedArticle();
-};
-
-// 处理图片加载事件
-const handleImageLoad = (event) => {
-  const img = event.target;
-  img.style.objectFit = 'cover';
-  img.style.width = '100%';
-  img.style.height = '100%';
 };
 
 // 评论相关数据
@@ -453,7 +444,7 @@ onUnmounted(() => {
               </div>
             </div>
             <div class="article-content">
-              <div v-html="articleDetail.content" class="article-content-text" @load="handleImageLoad"></div>
+              <MarkdownDisplay :content="articleDetail.content" />
             </div>
             <div class="copyright">
               <div class="author">

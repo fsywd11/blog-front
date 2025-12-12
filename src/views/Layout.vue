@@ -210,10 +210,20 @@ watch(
           <el-icon><Management/></el-icon>
           <span>文章分类</span>
         </el-menu-item>
-        <el-menu-item index="/article/manage">
-          <el-icon><Promotion/></el-icon>
-          <span>文章管理</span>
-        </el-menu-item>
+        <el-sub-menu index="3">
+          <template #title>
+            <el-icon><UserFilled/></el-icon>
+            <span>文章管理</span>
+          </template>
+          <el-menu-item index="/article/manage">
+            <el-icon><Promotion/></el-icon>
+            <span>文章列表</span>
+          </el-menu-item>
+          <el-menu-item index="/article/add">
+            <el-icon><Crop/></el-icon>
+            <span>发布文章</span>
+          </el-menu-item>
+        </el-sub-menu>
         <el-menu-item index="/user/manage">
           <el-icon><UserFilled /></el-icon>
           <span>用户管理</span>

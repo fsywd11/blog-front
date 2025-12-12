@@ -5,20 +5,125 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae092163-77c1-4800-8cbc-57fff0a1af57" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/MarkdownDisplay.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/article/ArticleEdit.vue" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/views/article/ArticleForm.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vue-project1.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vue-project1.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.browser.cjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.browser.cjs.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.browser.es.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.browser.es.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.browser.umd.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.browser.umd.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.cjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.cjs.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.es.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.es.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.umd.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/lib/turndown.umd.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/turndown/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/turndown/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@element-plus_icons-vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@element-plus_icons-vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@tinymce_tinymce-vue.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@tinymce_tinymce-vue.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@vueup_vue-quill.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@vueup_vue-quill.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-2TUXWMP5.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-2TUXWMP5.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-EH4H6VB6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-EH4H6VB6.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/clipboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/clipboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/dompurify.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/dompurify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__js.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__js.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/es6-promise_auto.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/es6-promise_auto.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js_lib_languages_css.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js_lib_languages_css.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js_lib_languages_javascript.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js_lib_languages_javascript.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js_lib_languages_xml.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js_lib_languages_xml.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/html-to-md.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/html-to-md.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/marked.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/marked.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/pinia-plugin-persistedstate.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/pinia-plugin-persistedstate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/pinia.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/pinia.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/quill-image-uploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/quill-image-uploader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/quill-markdown-shortcuts.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/quill-markdown-shortcuts.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/quill.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/quill.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_icons_default.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_icons_default.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_advlist.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_advlist.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_anchor.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_anchor.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_autolink.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_autolink.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_autoresize.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_autoresize.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_charmap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_charmap.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_code.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_code.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_codesample.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_codesample.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_directionality.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_directionality.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_emoticons.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_emoticons.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_fullscreen.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_fullscreen.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_help.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_help.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_image.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_image.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_importcss.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_importcss.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_insertdatetime.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_insertdatetime.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_link.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_link.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_lists.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_lists.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_media.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_media.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_nonbreaking.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_nonbreaking.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_pagebreak.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_pagebreak.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_preview.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_preview.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_save.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_save.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_searchreplace.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_searchreplace.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_table.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_table.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_visualblocks.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_visualblocks.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_visualchars.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_visualchars.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_wordcount.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_plugins_wordcount.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_themes_silver.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_themes_silver.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_tinymce.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/tinymce_tinymce.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/turndown.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/turndown.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vditor.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vditor.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-audio-better.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-audio-better.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-lazyload.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-lazyload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-router.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue3-danmaku.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue3-danmaku.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/public/image/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/猫宠.svg" beforeDir="false" afterPath="$PROJECT_DIR$/public/image/猫宠.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/main.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/assets/main.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ArticleComment.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ArticleComment.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/QuillEditor.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/QuillEditor.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/Layout.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/Layout.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/article/ArticleManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/article/ArticleManage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/user/UserAvatar.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/user/UserAvatar.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/HomesTimeLine/HomesTimeline.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/HomesTimeLine/HomesTimeline.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vite.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +175,7 @@
     &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.14.1&quot;,
     &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
     &quot;js.last.introduce.type&quot;: &quot;LET&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Front-blog&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Front-blog/public/static/editor.md&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;SCSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -95,18 +200,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Front-blog\public\static\editor.md" />
+      <recent name="D:\Front-blog\public\static\editor.md\lib" />
+      <recent name="D:\Front-blog\public\static" />
       <recent name="D:\作业\大三上册\网站技术架构\Front-blog - 副本\src\assets" />
       <recent name="D:\作业\大二下册\Web开发技术\My-blog\Front-blog\src\assets" />
-      <recent name="D:\作业\大二下册\Web开发技术\My-blog\Front-blog\src\assets\iconfont" />
-      <recent name="D:\作业\Web开发技术\vue\vue-project1\src\assets" />
-      <recent name="D:\作业\Web开发技术\vue\vue-project1\public" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Front-blog\public\image" />
       <recent name="D:\作业\大二下册\Web开发技术\My-blog\Front-blog\src\views\home\music" />
       <recent name="D:\作业\大二下册\Web开发技术\My-blog\Front-blog\src\views\home" />
       <recent name="D:\作业\大二下册\Web开发技术\My-blog\Front-blog\src\views\user" />
       <recent name="D:\作业\Web开发技术\vue\vue-project1\public" />
-      <recent name="D:\作业\Web开发技术\vue\vue-project1\src\assets" />
     </key>
   </component>
   <component name="RunManager" selected="npm.dev">
@@ -441,6 +546,9 @@
       <workItem from="1765418313252" duration="533000" />
       <workItem from="1765425041568" duration="7000" />
       <workItem from="1765448544973" duration="11591000" />
+      <workItem from="1765502281958" duration="8442000" />
+      <workItem from="1765511580362" duration="4768000" />
+      <workItem from="1765519607945" duration="7159000" />
     </task>
     <servers />
   </component>

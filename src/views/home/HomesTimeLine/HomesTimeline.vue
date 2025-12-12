@@ -4,6 +4,7 @@ import { articleListController } from "@/api/article.js";
 import { ElMessage } from 'element-plus';
 import router from "@/router/index.js";
 import Footer from "@/components/footer.vue";
+import MarkdownDisplay from "@/components/MarkdownDisplay.vue";
 
 function removeHtmlFormat(htmlStr) {
   const doc = new DOMParser().parseFromString(htmlStr, 'text/html');

@@ -27,6 +27,22 @@ const routes = [
                 component: ()=>import("@/views/article/ArticleManage.vue")
             },
             {
+                path: '/article/add',
+                name: 'ArticleForm',
+                meta:{
+                    title:'发布文章'
+                },
+                component: ()=>import("@/views/article/ArticleForm.vue")
+            },
+            {
+                path: '/article/edit',
+                name: 'ArticleEdit',
+                meta:{
+                    title:'编辑文章'
+                },
+                component: ()=>import("@/views/article/ArticleEdit.vue")
+            },
+            {
                 path: '/user/avatar',
                 name: 'UserAvatar',
                 meta:{
