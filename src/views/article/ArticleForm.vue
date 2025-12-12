@@ -133,7 +133,6 @@ const handleClose = (path) => {  // 只接收路径参数
             <el-option label="私密" value="私密" />
           </el-select>
         </el-form-item>
-
         <el-form-item label="封面">
           <el-upload
               class="upload-btn"
@@ -145,11 +144,13 @@ const handleClose = (path) => {  // 只接收路径参数
               :on-success="uploadSuccess"
               :on-error="uploadError"
           >
+
             <el-button type="primary" plain>上传封面</el-button>
           </el-upload>
           <!-- 显示上传的文件名 -->
           <span class="file-name" v-if="coverFileName">{{ coverFileName }}</span>
         </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="submitArticle('已发布')">发布</el-button>
           <el-button type="warning" @click="handleClose(router.currentRoute.value.path)">关闭</el-button>
