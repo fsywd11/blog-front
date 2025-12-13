@@ -59,6 +59,7 @@ const submitArticle = async (stateType) => {
       ElMessage.success('文章编辑成功')
     } else {
       await articleAddService(articleModel.value)
+      await articleStore.fetchArticleList()
       ElMessage.success('文章发布成功')
     }
     await router.push('/article/manage')
@@ -152,7 +153,7 @@ const handleClose = (path) => {  // 只接收路径参数
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="submitArticle('已发布')">发布</el-button>
+          <el-button type="primary" @click="submitArticle('已发布'),handleClose(router.currentRoute.value.path)">发布</el-button>
           <el-button type="warning" @click="handleClose(router.currentRoute.value.path)">关闭</el-button>
         </el-form-item>
       </el-form>

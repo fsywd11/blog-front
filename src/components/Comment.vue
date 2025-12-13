@@ -137,6 +137,7 @@ const handleKeyDown = (e) => {
   position: relative;
   .textarea {
     background-color: var(--textarea-color);
+    color: var(--text);
     resize: none;
     padding: 0.5rem;
     width: 100%;

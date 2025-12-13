@@ -4,10 +4,50 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae092163-77c1-4800-8cbc-57fff0a1af57" name="更改" comment="集成了md-editor-v3编辑器">
+    <list default="true" id="ae092163-77c1-4800-8cbc-57fff0a1af57" name="更改" comment="修改了编辑器，集成了md-editor-v3编辑器">
+      <change afterPath="$PROJECT_DIR$/src/stores/articleStore.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@element-plus_icons-vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@element-plus_icons-vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@vueup_vue-quill.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@vueup_vue-quill.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@vueup_vue-quill.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@vueup_vue-quill.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-TN6XA7V6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-TN6XA7V6.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-UQWBJQZ5.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/chunk-UQWBJQZ5.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/clipboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/clipboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/dompurify.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/dompurify.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__js.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__js.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/es6-promise_auto.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/es6-promise_auto.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/highlight__js.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/marked.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/marked.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/pinia-plugin-persistedstate.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/pinia-plugin-persistedstate.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/pinia.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/pinia.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/pinia.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/pinia.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/quill-image-uploader.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/quill-image-uploader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/quill.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/quill.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-audio-better.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-audio-better.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-lazyload.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-lazyload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-lazyload.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-lazyload.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-router.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue-router.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue-router.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue3-danmaku.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue3-danmaku.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/vue3-danmaku.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/vue3-danmaku.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ArticleComment.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ArticleComment.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Comment.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Comment.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/article/ArticleEdit.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/article/ArticleEdit.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/article/ArticleForm.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/article/ArticleForm.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/home/HomesTimeLine/HomesTimeline.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/HomesTimeLine/HomesTimeline.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/article/ArticleManage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/article/ArticleManage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/views/home/HomesPages.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/home/HomesPages.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,14 +60,26 @@
         <option value="TypeScript File" />
         <option value="tsconfig.json" />
         <option value="SCSS File" />
-        <option value="JavaScript File" />
         <option value="Vue Composition API Component" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;fsywd11&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/fsywd11/blog-front.git&quot;,
+    &quot;accountId&quot;: &quot;61672871-15e9-46e2-9062-4e86fcd5a12b&quot;
+  }
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/views/home/HomesPages.vue" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -432,7 +484,9 @@
       <workItem from="1765448544973" duration="11591000" />
       <workItem from="1765502281958" duration="8442000" />
       <workItem from="1765511580362" duration="4768000" />
-      <workItem from="1765519607945" duration="8494000" />
+      <workItem from="1765519607945" duration="8661000" />
+      <workItem from="1765545690431" duration="781000" />
+      <workItem from="1765598131487" duration="15803000" />
     </task>
     <task id="LOCAL-00001" summary="集成了md-editor-v3编辑器">
       <option name="closed" value="true" />
@@ -442,7 +496,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765527052777</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="修改了编辑器，集成了md-editor-v3编辑器">
+      <option name="closed" value="true" />
+      <created>1765528289784</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1765528289784</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -454,6 +516,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="集成了md-editor-v3编辑器" />
-    <option name="LAST_COMMIT_MESSAGE" value="集成了md-editor-v3编辑器" />
+    <MESSAGE value="修改了编辑器，集成了md-editor-v3编辑器" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改了编辑器，集成了md-editor-v3编辑器" />
   </component>
 </project>

@@ -13,6 +13,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@kangc/v-md-editor": "^2.3.18",
     "@moefe/vue-aplayer": "^2.0.0-beta.5",
     "@studio-freight/lenis": "^1.0.42",
     "@tinymce/tinymce-vue": "^6.3.0",

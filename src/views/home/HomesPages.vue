@@ -156,10 +156,10 @@ const ArticleList = () => {
         total.value = publishedArticles.length; // 更新总数为已发布文章的数量
         isLoading.value = false; // 数据加载完成隐藏骨架屏
         articleManage.setInfo(publishedArticles);
-        
+
         // 更新背景图片数组，只包含已发布文章的图片
         imageArray.value = publishedArticles.filter(article => article.coverImg);
-        
+
         // 初始化背景图片轮播
         if (Array.isArray(imageArray.value) && imageArray.value.length > 0) {
           currentImage.value = imageArray.value[currentImageIndex.value].coverImg;

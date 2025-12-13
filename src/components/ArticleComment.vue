@@ -12,6 +12,7 @@ import { articleCollectListService, articleLikeListService } from "@/api/likeCol
 // 引入代码高亮库
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github.css';
+// 引入封装的Markdown预览组件
 import MarkdownDisplay from "@/components/MarkdownDisplay.vue";
 
 const loading = ref(false);
@@ -31,16 +32,20 @@ const articleDetail = ref({
   updateTime: '',
 });
 
+// ========== 新增：目录悬浮相关响应式数据 ==========
+const isDirFixed = ref(false); // 目录是否悬浮
+const dirRef = ref(null); // 目录容器的ref
+const dirOffsetTop = ref(0); // 目录距离页面顶部的初始距离
+const dirWidth = ref(0); // 目录的初始宽度
+
 // 代码高亮处理函数
-const highlightCodeBlocks = () => {
-  // 等待DOM更新后执行
-  nextTick(() => {
-    // 查找文章内容中的所有代码块（pre标签）
-    const codeBlocks = document.querySelectorAll('.article-content-text pre');
-    codeBlocks.forEach(block => {
-      // 为每个代码块应用高亮
-      hljs.highlightElement(block);
-    });
+const highlightCodeBlocks = async () => {
+  await nextTick();
+  if (!articleContentRef.value) return;
+  const codeBlocks = articleContentRef.value.querySelectorAll('.article-content-text pre code, .article-content-text pre');
+  codeBlocks.forEach(block => {
+    const target = block.tagName === 'CODE' ? block : block.querySelector('code') || block;
+    hljs.highlightElement(target);
   });
 };
 
@@ -48,13 +53,91 @@ const highlightCodeBlocks = () => {
 watch(() => route.params.id, async (newId) => {
   articleId.value = Number(newId);
   await getArticleDetailById();
-  await updateAdjacentArticles(); // 路由变化时重新查找上下篇已发布文章
-});
+  await updateAdjacentArticles();
+}, { immediate: false });
+
+// ========== 核心优化：生成唯一锚点ID（避免冲突） ==========
+const generateAnchorId = (title, index) => {
+  const cleanTitle = title.replace(/[^\w\s]/gi, '').replace(/\s+/g, '-').toLowerCase();
+  return `anchor-${cleanTitle}-${index}`;
+};
+
+// ========== 解析Markdown标题并注入锚点 ==========
+const parseAndInjectAnchors = async () => {
+  if (!articleDetail.value.content || !articleContentRef.value) return [];
+
+  // 步骤1：解析Markdown标题
+  const lines = articleDetail.value.content.split('\n');
+  const titles = [];
+  let inCodeBlock = false;
+  let titleIndex = 0;
+
+  lines.forEach((line) => {
+    if (line.trim().startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      return;
+    }
+    if (inCodeBlock) return;
+
+    const titleMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (titleMatch) {
+      const level = titleMatch[1].length;
+      const titleText = titleMatch[2].trim();
+      if (!titleText) return;
+
+      const anchorId = generateAnchorId(titleText, titleIndex);
+      titles.push({
+        title: titleText,
+        id: anchorId,
+        level: level,
+        tagName: `H${level}`,
+        indent: level - 1
+      });
+      titleIndex++;
+    }
+  });
+
+  // 步骤2：等待MdPreview完全渲染（延长至500ms，确保DOM生成）
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  // 步骤3：为标题标签手动添加ID（强制注入，避免渲染丢失）
+  const contentEl = articleContentRef.value.querySelector('.article-content-text');
+  if (!contentEl) return titles;
+
+  const headingElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  headingElements.forEach((el, idx) => {
+    if (idx < titles.length) {
+      el.id = titles[idx].id;
+      // 确保标题元素可被聚焦（解决滚动失效）
+      el.tabIndex = -1;
+    }
+  });
+
+  // ========== 新增：获取目录的初始位置和宽度（需在DOM渲染后） ==========
+  await nextTick();
+  if (dirRef.value) {
+    const rect = dirRef.value.getBoundingClientRect();
+    dirOffsetTop.value = rect.top + window.scrollY; // 距离页面顶部的绝对距离
+    dirWidth.value = rect.width; // 初始宽度
+  }
+
+  return titles;
+};
+
+// ========== 新增：监听滚动事件，控制目录悬浮 ==========
+const handleScroll = () => {
+  const scrollTop = window.scrollY;
+  // 判断是否滚动到目录顶部
+  isDirFixed.value = scrollTop >= dirOffsetTop.value - 20; // 20px偏移量，提前悬浮
+};
 
 onMounted(async () => {
   await getArticleDetailById();
-  await updateAdjacentArticles(); // 初始化时查找上下篇已发布文章
-  highlightCodeBlocks(); // 初始加载后高亮
+  await updateAdjacentArticles();
+  window.addEventListener('resize', handleResize);
+  handleResize();
+  // ========== 新增：添加滚动监听 ==========
+  window.addEventListener('scroll', handleScroll);
 });
 
 // 根据ID查找文章信息
@@ -66,77 +149,59 @@ async function getArticleDetailById() {
       await router.push({ path: '/' });
       return;
     }
-    // 处理时间格式
     res.data.createTime = res.data.createTime.split(' ')[0];
     res.data.updateTime = res.data.updateTime.split(' ')[0];
     articleDetail.value = res.data;
     loading.value = true;
 
-    // 文章加载完成后重新提取目录和高亮代码
-    await nextTick(() => {
-      extractHeadings();
-      resetDirectoryPosition();
-      highlightCodeBlocks(); // 加载完成后高亮
-      initDirectoryObserver(); // 初始化目录动画观察器
-    });
+    await nextTick();
+    await highlightCodeBlocks();
+    titles.value = await parseAndInjectAnchors(); // 替换原fetchMarkdownTitles
+    initScrollListener();
   } catch (error) {
     ElMessage.error('加载文章失败');
     console.error('文章加载错误:', error);
   }
 }
 
-// 查找上一篇已发布的文章ID
+// 查找上一篇/下一篇文章ID
 const findPreviousPublishedArticle = async () => {
   let prevId = articleId.value - 1;
   while (prevId > 0) {
     try {
       const res = await articleInfoById(prevId);
-      if (res.data && res.data.state === '已发布') {
-        return prevId;
-      }
-    } catch (error) {
-      console.log(`检查文章ID ${prevId} 时出错:`, error);
-    }
+      if (res.data && res.data.state === '已发布') return prevId;
+    } catch (error) { console.log(`检查文章ID ${prevId} 出错:`, error); }
     prevId--;
   }
   return null;
 };
 
-// 查找下一篇已发布的文章ID
 const findNextPublishedArticle = async () => {
   let nextId = articleId.value + 1;
-  // 设置一个合理的上限，避免无限循环
   const maxCheckCount = 100;
   let checkCount = 0;
-
   while (checkCount < maxCheckCount) {
     try {
       const res = await articleInfoById(nextId);
-      if (res.data && res.data.state === '已发布') {
-        return nextId;
-      }
-    } catch (error) {
-      console.log(`检查文章ID ${nextId} 时出错:`, error);
-    }
+      if (res.data && res.data.state === '已发布') return nextId;
+    } catch (error) { console.log(`检查文章ID ${nextId} 出错:`, error); }
     nextId++;
     checkCount++;
   }
   return null;
 };
 
-// 存储上一篇和下一篇已发布文章的ID
+// 存储上一篇和下一篇ID
 const previousArticleId = ref(null);
 const nextArticleId = ref(null);
-
-// 更新上一篇和下一篇文章的ID
 const updateAdjacentArticles = async () => {
   previousArticleId.value = await findPreviousPublishedArticle();
   nextArticleId.value = await findNextPublishedArticle();
 };
 
-// 评论相关数据
+// 评论相关
 const comments = ref([]);
-
 const loadComments = async () => {
   try {
     const result = await commentList(route.params.id);
@@ -146,33 +211,20 @@ const loadComments = async () => {
     console.error('评论加载错误:', error);
   }
 };
+watch(() => route.params.id, loadComments, { immediate: true });
 
-watch(() => route.params.id, () => {
-  loadComments();
-}, { immediate: true });
-
-// 去除HTML标签并统计字数
+// 字数统计
 const countWords = (content) => {
   if (!content) return 0;
-
-  // 去除HTML标签
   const textWithoutHtml = content.replace(/<[^>]*>/g, '');
-
-  // 处理中文和全角字符
-  const chineseChars = textWithoutHtml.match(/[\u4e00-\u9fa5\uff00-\uffff]/g);
-  const chineseCount = chineseChars ? chineseChars.length : 0;
-
-  // 处理英文单词
-  const englishWords = textWithoutHtml.match(/[a-zA-Z0-9_-]+/g);
-  const englishCount = englishWords ? englishWords.length : 0;
-
+  const chineseCount = textWithoutHtml.match(/[\u4e00-\u9fa5\uff00-\uffff]/g)?.length || 0;
+  const englishCount = textWithoutHtml.match(/[a-zA-Z0-9_-]+/g)?.length || 0;
   return chineseCount + englishCount;
 };
 
-// 点赞和收藏计数
+// 点赞收藏计数
 const likeCount = ref(0);
 const collectCount = ref(0);
-
 const loadLikeAndCollectCount = async () => {
   try {
     const [likeResult, collectResult] = await Promise.all([
@@ -185,237 +237,93 @@ const loadLikeAndCollectCount = async () => {
     console.error('加载点赞收藏数据错误:', error);
   }
 };
-
 loadLikeAndCollectCount();
 
 // 锚点目录相关
-const headings = ref([]);
-const activeHeadingId = ref('');
 const isVisible = ref(true);
-const directoryRef = ref(null); // 目录元素引用
-const directoryTop = ref(0); // 目录初始顶部位置
-const directoryWidth = ref(0); // 目录宽度
-const directoryEntered = ref(false); // 目录是否已进入视口
 let scrollHandler = null;
-let directoryObserver = null;
+const titles = ref([]);
+const currentIndex = ref(0);
+const articleContentRef = ref(null);
 
-// 提取标题
-const extractHeadings = () => {
-  // 清空现有目录
-  headings.value = [];
+// ========== 终极修复：滚动定位函数（原生锚点 + 平滑滚动） ==========
+const handleAnchorClick = async (anchor, idx) => {
+  await nextTick();
+  const targetEl = document.getElementById(anchor.id);
+  if (!targetEl || !articleContentRef.value) return;
 
-  // 查找文章内容容器
-  const contentEl = document.querySelector('.article-content-text');
-  if (!contentEl) {
-    console.warn('未找到文章内容容器');
-    return;
-  }
-
-  // 提取所有标题标签
-  const headingElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
-  if (headingElements.length === 0) {
-    console.log('未找到标题元素');
-    return;
-  }
-
-  // 处理每个标题
-  headings.value = Array.from(headingElements).map((el, index) => {
-    // 确保标题有唯一ID
-    let id = el.id;
-    if (!id) {
-      id = `heading-${articleId.value}-${index}`;
-      el.id = id;
-    }
-
-    return {
-      id,
-      text: el.innerText.trim(),
-      tag: el.tagName,
-      element: el
-    };
+  // 方案1：原生scrollIntoView（强制滚动，优先级最高）
+  targetEl.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start', // 对齐到顶部（可改为'center'居中）
+    inline: 'nearest'
   });
 
-  // 初始化滚动监听
-  initScrollListener();
+  // 方案2：备用方案（手动滚动，解决scrollIntoView失效情况）
+  setTimeout(() => {
+    const container = articleContentRef.value;
+    const targetTop = targetEl.getBoundingClientRect().top - container.getBoundingClientRect().top;
+    container.scrollTo({
+      top: container.scrollTop + targetTop - 20, // 20px偏移
+      behavior: 'smooth'
+    });
+  }, 100);
+
+  currentIndex.value = idx;
 };
 
-// 初始化目录进入视口观察器
-const initDirectoryObserver = () => {
-  // 先清除已有的观察器
-  if (directoryObserver) {
-    directoryObserver.disconnect();
-  }
-
-  // 只有当目录存在且未显示过时才创建观察器
-  if (directoryRef.value && !directoryEntered.value) {
-    directoryObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          directoryEntered.value = true;
-          directoryObserver.disconnect();
-        }
-      });
-    }, { threshold: 0.1 }); // 当10%进入视口时触发
-
-    directoryObserver.observe(directoryRef.value);
-  }
-};
-
-// 初始化滚动监听
+// ========== 滚动监听（实时更新当前标题） ==========
 const initScrollListener = () => {
-  // 移除旧的监听
   if (scrollHandler) {
-    window.removeEventListener('scroll', scrollHandler);
+    articleContentRef.value?.removeEventListener('scroll', scrollHandler);
   }
 
-  // 记录目录初始位置和宽度
-  resetDirectoryPosition();
-
-  // 创建新地滚动处理函数
   scrollHandler = () => {
-    // 处理目录固定定位
-    handleDirectoryPosition();
+    if (!articleContentRef.value || titles.value.length === 0) return;
 
-    // 处理标题激活状态
-    handleHeadingActivation();
+    const containerTop = articleContentRef.value.getBoundingClientRect().top;
+    let activeIndex = 0;
+
+    // 遍历所有标题，找到当前可视区域的标题
+    titles.value.forEach((title, idx) => {
+      const el = document.getElementById(title.id);
+      if (el) {
+        const elTop = el.getBoundingClientRect().top - containerTop;
+        if (elTop - 50 <= articleContentRef.value.scrollTop) {
+          activeIndex = idx;
+        }
+      }
+    });
+
+    currentIndex.value = activeIndex;
   };
 
-  // 添加新的监听
-  window.addEventListener('scroll', scrollHandler);
-  // 立即执行一次以设置初始状态
+  articleContentRef.value?.addEventListener('scroll', scrollHandler);
+  // 初始化执行一次
   scrollHandler();
 };
 
-// 重置目录位置 - 关键函数：重新计算目录初始位置
-const resetDirectoryPosition = () => {
-  if (directoryRef.value) {
-    // 先将目录恢复到自然位置
-    directoryRef.value.style.position = 'static';
-    directoryRef.value.style.top = 'auto';
-    directoryRef.value.style.width = 'auto';
-
-    // 重新计算位置和宽度
-    const rect = directoryRef.value.getBoundingClientRect();
-    directoryTop.value = rect.top + window.scrollY;
-    directoryWidth.value = rect.width;
-  }
-};
-
-// 处理目录定位 - 确保目录始终在视口内
-const handleDirectoryPosition = () => {
-  if (!directoryRef.value) return;
-
-  const scrollY = window.scrollY;
-  const directoryEl = directoryRef.value;
-
-  // 当滚动超过目录初始位置时，固定目录
-  if (scrollY >= directoryTop.value - 20) { // 20px偏移量
-    directoryEl.style.position = 'fixed';
-    directoryEl.style.top = '20px';
-    directoryEl.style.width = `${directoryWidth.value}px`;
-    directoryEl.style.zIndex = '100'; // 确保在其他内容上方
-  } else {
-    // 恢复默认定位
-    directoryEl.style.position = 'static';
-    directoryEl.style.top = 'auto';
-    directoryEl.style.width = 'auto';
-    directoryEl.style.zIndex = '10';
-  }
-};
-
-// 处理标题激活状态
-const handleHeadingActivation = () => {
-  const scrollPosition = window.scrollY + 150; // 调整偏移量更符合阅读习惯
-
-  // 从底部向上检查哪个标题在可视区域
-  for (let i = headings.value.length - 1; i >= 0; i--) {
-    const heading = headings.value[i];
-    if (!heading.element) continue;
-
-    const offsetTop = heading.element.offsetTop;
-    if (scrollPosition >= offsetTop) {
-      activeHeadingId.value = heading.id;
-      break;
-    }
-  }
-};
-
-// 监听文章内容变化 - 当文章内容改变时重新初始化目录和高亮
-watch(
-    () => articleDetail.value.content,
-    () => {
-      // 内容变化后重新提取目录并重置位置
-      nextTick(() => {
-        extractHeadings();
-        resetDirectoryPosition();
-        highlightCodeBlocks(); // 内容变化时重新高亮
-        initDirectoryObserver(); // 重新初始化观察器
-      });
-    }
-);
-
-// 监听窗口大小变化
+// 窗口大小监听
 const handleResize = () => {
-  const newVisible = window.innerWidth > 900;
-  isVisible.value = newVisible;
-
-  // 窗口大小变化时重新计算目录位置和宽度
-  if (newVisible && directoryRef.value) {
-    resetDirectoryPosition();
-    handleDirectoryPosition();
-    // 窗口大小改变后重新检查可见性
-    initDirectoryObserver();
+  isVisible.value = window.innerWidth > 900;
+  // ========== 新增：窗口大小变化时重新计算目录位置和宽度 ==========
+  if (dirRef.value) {
+    const rect = dirRef.value.getBoundingClientRect();
+    dirOffsetTop.value = rect.top + window.scrollY;
+    dirWidth.value = rect.width;
   }
 };
 
-onMounted(() => {
-  // 初始化窗口大小监听
-  window.addEventListener('resize', handleResize);
-  handleResize(); // 初始设置
-
-  // 确保在文章加载完成后提取目录
-  const articleObserver = new MutationObserver(() => {
-    if (loading.value) {
-      extractHeadings();
-      resetDirectoryPosition();
-      highlightCodeBlocks(); // 观察到内容加载完成时高亮
-      initDirectoryObserver(); // 初始化目录动画
-      articleObserver.disconnect();
-    }
-  });
-
-  articleObserver.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
-});
-
-// 点击目录项滚动到对应位置
-const scrollToHeading = (id) => {
-  const element = document.getElementById(id);
-  if (element) {
-    // 平滑滚动到标题位置
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-      inline: 'nearest'
-    });
-    activeHeadingId.value = id;
-  }
-};
-
-// 组件卸载时清理
+// 组件卸载清理
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
-  if (scrollHandler) {
-    window.removeEventListener('scroll', scrollHandler);
+  if (scrollHandler && articleContentRef.value) {
+    articleContentRef.value.removeEventListener('scroll', scrollHandler);
   }
-  if (directoryObserver) {
-    directoryObserver.disconnect();
-  }
+  // ========== 新增：移除滚动监听 ==========
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
-
 
 <template>
   <div class="login-container">
@@ -443,20 +351,21 @@ onUnmounted(() => {
                 </div>
               </div>
             </div>
-            <div class="article-content">
-              <MarkdownDisplay :content="articleDetail.content" />
+
+            <!-- 文章内容容器（关键：移除max-height，保留position:relative） -->
+            <div class="article-content" ref="articleContentRef">
+              <MarkdownDisplay
+                  :content="articleDetail.content"
+                  :isHtml="false"
+                  class="article-content-text"
+              />
             </div>
+
             <div class="copyright">
-              <div class="author">
-                <strong>本文作者： 神名代理人</strong>
-              </div>
-              <div class="link">
-                <strong>本文链接： http://localhost:5173/homes/home</strong>
-              </div>
+              <div class="author"><strong>本文作者： 神名代理人</strong></div>
+              <div class="link"><strong>本文链接： http://localhost:5173/homes/home</strong></div>
               <div class="license">
-                <div>
-                  <strong>版权声明： </strong>
-                </div>
+                <div><strong>版权声明： </strong></div>
                 <div class="license_text">
                   本站所有文章除特别声明外，均采用
                   <a class="copyright_a" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank">
@@ -466,514 +375,436 @@ onUnmounted(() => {
                 </div>
               </div>
             </div>
+
             <div class="tipping">
               <el-tooltip class="box-item" effect="light" placement="top">
                 <template #content>
                   <div class="qrCode">
-                    <div>
-                      微信
-                      <img src="@/assets/weixing.png" alt="微信二维码">
-                    </div>
+                    <div>微信 <img src="@/assets/weixing.png" alt="微信二维码"></div>
                   </div>
                 </template>
-                <div class="tipping_text">
-                  <span>ヾ(≧▽≦*)o！</span>
-                </div>
+                <div class="tipping_text"><span>ヾ(≧▽≦*)o！</span></div>
               </el-tooltip>
             </div>
+
             <div class="goOn">
-              <!-- 上一篇 -->
-              <div>
-                <div v-if="previousArticleId">
-                  <el-link @click="$router.push(`/homes/articleComment/${previousArticleId}`)">
-                    上一篇
-                  </el-link>
-                </div>
+              <div v-if="previousArticleId">
+                <el-link @click="$router.push(`/homes/articleComment/${previousArticleId}`)">上一篇</el-link>
               </div>
-              <!-- 下一篇 -->
-              <div>
-                <div v-if="nextArticleId">
-                  <el-link @click="$router.push(`/homes/articleComment/${nextArticleId}`)">
-                    下一篇
-                  </el-link>
-                </div>
+              <div v-if="nextArticleId">
+                <el-link @click="$router.push(`/homes/articleComment/${nextArticleId}`)">下一篇</el-link>
               </div>
             </div>
+
             <Comment :articleId="articleId" v-if="loading" :key="articleId" />
           </div>
         </el-aside>
+
         <!-- 右边用户栏和目录 -->
         <el-main>
           <div class="right-userLogo">
             <home-right />
-            <!-- 目录添加进入动画类 -->
+            <!-- 文章目录组件：新增ref="dirRef"，动态绑定样式实现悬浮 -->
             <div
-                v-if="isVisible"
-                ref="directoryRef"
+                ref="dirRef"
                 class="anchor-directory"
-                :class="{ 'directory-enter': directoryEntered }"
+                v-if="isVisible && titles.length"
+                :style="{
+                position: isDirFixed ? 'fixed' : 'static',
+                top: isDirFixed ? '55px' : 'auto', // 悬浮时距离顶部20px
+                right: isDirFixed ? 'auto' : 'auto', // 对齐原位置的右侧
+                width: isDirFixed ? `${dirWidth}px` : 'auto', // 保持原宽度
+                zIndex: isDirFixed ? 999 : 'auto', // 悬浮时提高层级
+                //隐藏下方滑动栏
+                overflowX: 'hidden'
+
+              }"
             >
               <div class="directory-title">文章目录</div>
               <div class="directory-content">
                 <ul class="heading-list">
                   <li
-                      v-for="heading in headings"
-                      :key="heading.id"
-                      :class="['heading-item', `level-${heading.tag.toLowerCase()}`, { 'active': activeHeadingId === heading.id }]"
-                      @click="scrollToHeading(heading.id)"
+                      class="heading-item"
+                      v-for="(anchor, index) in titles"
+                      :key="anchor.id"
+                      :class="[`level-${anchor.tagName.toLowerCase()}`, currentIndex === index ? 'active' : '']"
+                      @click="handleAnchorClick(anchor, index)"
                   >
-                    {{ heading.text }}
+                    {{ anchor.title }}
                   </li>
                 </ul>
-                <div v-if="headings.length === 0" class="empty-tip">暂无目录</div>
               </div>
+            </div>
+            <div class="anchor-directory empty-tip" v-if="isVisible && !titles.length">
+              暂无目录
             </div>
           </div>
         </el-main>
       </div>
     </el-container>
-    <div style="width: 100%">
-      <Footer />
-    </div>
+  </div>
+  <div style="width: 100%">
+    <Footer />
   </div>
 </template>
 
 <style scoped lang="scss">
-/* 基础样式 */
+// 全局样式
 .login-container {
-  height: auto;
-  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: var(--bg);
-  overflow-wrap: break-word;
-  word-break: break-all;
+  padding: 20px 0;
+  box-sizing: border-box;
 
   .el-container {
     width: 80%;
     display: flex;
-
-    .el-header {
-      height: 50px;
-      width: 100%;
-      padding: 10px;
-      border-radius: 15px;
-    }
+    flex-direction: column;
+    gap: 20px;
 
     .all-container {
-      width: 100%;
       display: flex;
-      flex-direction: row;
-    }
-
-    .el-aside {
-      width: 75%;
-      height: auto;
-      overflow: visible;
-
-      .left-article {
-        padding: 10px;
-        background-color: var(--card-bg);
-        height: auto;
-        border-radius: 15px;
-      }
-    }
-
-    .el-main {
-      margin: 0;
-      padding: 0;
-      width: 25%;
-
-      .right-userLogo {
-        padding: 0 10px 0 20px;
-        overflow: visible;
-      }
+      gap: 20px;
+      flex: 1;
     }
   }
 }
 
-/* 版权信息样式 */
-.copyright {
-  font-size: 0.8em;
-  margin: 1rem 0;
-  padding: 1rem 2rem;
-  border-radius: 0.625rem;
-  border: 1px solid var(--el-border-color);
+// 左侧文章区域
+.el-aside {
+  width: 75%;
+  flex: none;
 
-  .license {
+  .left-article {
+    background-color: var(--card-bg);
+    border-radius: 15px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+}
+
+// 右侧目录区域
+.el-main {
+  width: 25%;
+  flex: none;
+  padding: 0;
+
+  .right-userLogo {
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
 
-    & > div:nth-child(1) {
-      @media screen and (max-width: 910px) {
-        width: 100%;
-        display: flex;
+// 文章标题区域
+.head_title {
+  width: 100%;
+  height: 20rem;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 20px;
+  position: relative;
+
+  .head_title_text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .statistics {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+
+      div {
+        background-color: rgba(255,255,255,0.2);
+        padding: 5px 10px;
+        border-radius: 4px;
       }
     }
 
-    @media screen and (max-width: 910px) {
-      flex-direction: column;
+    .time {
+      display: flex;
+      gap: 15px;
+      font-size: 0.8rem;
+      opacity: 0.9;
     }
   }
+}
 
-  .license_text {
+// 文章内容容器（关键修改：删除max-height，保留overflow-y: auto和position:relative）
+.article-content {
+  width: 100%;
+  margin-bottom: 20px;
+  overflow-y: auto; // 仅当内容超过视口时显示滚动条，否则高度自适应
+  scroll-behavior: smooth !important; // 强制平滑滚动
+  position: relative; // 关键：作为定位基准
+
+  // 滚动条样式优化
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+    &:hover {
+      background: #999;
+    }
+  }
+}
+
+// 文章内容文本样式
+.article-content-text {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 20px 0 15px 0;
+    font-weight: bold;
+    scroll-margin-top: 20px; // 关键：锚点滚动偏移（兼容现代浏览器）
+  }
+
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.6rem; }
+  h3 { font-size: 1.4rem; }
+  h4 { font-size: 1.2rem; }
+  h5 { font-size: 1.1rem; }
+  h6 { font-size: 1rem; }
+
+  p { margin: 10px 0; }
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border-radius: 8px;
+  }
+
+  pre {
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 6px;
+    background: #f5f5f5;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+}
+
+// 版权信息样式
+.copyright {
+  font-size: 0.8rem;
+  padding: 15px;
+  border: 1px solid var(--el-border-color);
+  border-radius: 8px;
+  margin-bottom: 20px;
+
+  .author, .link {
+    margin-bottom: 10px;
     display: flex;
-    @media screen and (max-width: 910px) {
-      width: 100%;
-      margin-top: 0.5rem;
+    align-items: center;
+  }
+
+  .license {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+
+    @media (max-width: 900px) {
+      flex-direction: column;
+      gap: 5px;
     }
   }
 
   .copyright_a {
-    color: var(--el-text-color-secondary);
-
+    color: var(--el-color-primary);
+    text-decoration: none;
     &:hover {
-      color: var(--el-color-primary);
       text-decoration: underline;
     }
   }
-
-  & > div {
-    margin: 1rem 0;
-    display: flex;
-    align-items: center;
-
-    strong {
-      margin: 0 0.5rem;
-      font-weight: bold;
-      word-break: break-all;
-    }
-  }
 }
 
-/* 文章内容样式 */
-.article-content {
-  margin-bottom: 20px;
-  overflow: hidden;
-  color: var(--text);
-
-  .article-content-text {
-    overflow-wrap: break-word;
-    word-break: break-all;
-    margin-top: 20px;
-    padding: 2px;
-    border-radius: 0.625rem;
-  }
-}
-
-.article-content-text img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  transition: transform 0.3s ease;
-  object-fit: contain;
-}
-
-.article-content-text img:hover {
-  transform: scale(1.1);
-}
-
-/* 代码块样式优化 */
-.article-content-text {
-  // 确保代码块显示正常
-  pre {
-    padding: 1em !important;
-    background: #f5f5f5 !important;
-    border-radius: 4px !important;
-    overflow-x: auto !important;
-    margin: 1em 0 !important;
-    font-family: 'Consolas', 'Monaco', monospace !important;
-  }
-
-  // 代码语法高亮样式
-  .hljs {
-    color: #333 !important;
-    line-height: 1.5 !important;
-
-    .hljs-keyword { color: #0000ff !important; }
-    .hljs-string { color: #008000 !important; }
-    .hljs-comment { color: #808080 !important; }
-    .hljs-number { color: #800000 !important; }
-    .hljs-function { color: #795e26 !important; }
-  }
-}
-
-/* 响应式样式 */
-@media screen and (max-width: 900px) {
-  .login-container .el-container {
-    width: 100%;
-  }
-  .login-container .el-container .all-container {
-    flex-direction: column;
-  }
-
-  .login-container .el-container .all-container .el-aside {
-    width: 100%;
-  }
-
-  .login-container .el-container .all-container .el-main {
-    display: none;
-  }
-}
-
-/* 文章标题区域 */
-.head_title {
-  border-radius: 0.4rem;
-  height: 20rem;
-  width: 100%;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  .head_title_text {
-    display: flex;
-    flex-direction: column;
-    align-items: self-start;
-    color: white;
-    font-size: 15px;
-    padding: 5%;
-
-    div div {
-      background-color: rgba(255, 255, 255, 0.3);
-      border-radius: 5px;
-      margin: 5px;
-      padding: 5px;
-    }
-    div {
-      display: flex;
-    }
-
-    .title {
-      font-size: 40px;
-      margin: 10px 0;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-  }
-}
-
-/* 打赏区域样式 */
+// 打赏区域
 .tipping {
   display: flex;
-  text-align: center;
-  font-size: 0.86em;
-  font-weight: bold;
   justify-content: center;
-  align-items: center;
-  margin: 1rem 0;
+  margin-bottom: 20px;
 
   .tipping_text {
-    display: flex;
-    color: white;
     background-color: #C0A46B;
-    width: 20%;
-    border: 1px solid var(--el-border-color);
-    height: 2.5em;
-    border-radius: 5px;
-    justify-content: center;
-    align-items: center;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    span {
-      margin-left: 0.6em;
-    }
+    transition: background-color 0.3s;
+    font-weight: bold;
+    font-size: 0.9rem;
 
     &:hover {
       background-color: #fc7444;
     }
   }
-
-  @media screen and (max-width: 500px) {
-    .tipping_text {
-      width: 50%;
-    }
-  }
 }
 
-/* 二维码样式 */
-.qrCode {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-
-  div {
-    display: flex;
-    flex-direction: column-reverse;
-    margin: 0 0.5rem;
-    align-items: center;
-    justify-content: center;
-  }
-
-  img {
-    width: 9em;
-    height: 9em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-}
-
-/* 上下篇导航 */
+// 上下篇导航
 .goOn {
   display: flex;
   justify-content: space-between;
-  margin: 1rem 0;
-  padding: 1rem 0;
+  padding: 15px 0;
   border-top: 1px dashed #eee;
+  margin-bottom: 20px;
 
-  div {
-    display: flex;
-    align-items: center;
+  .el-link {
     color: var(--el-text-color-secondary);
-    cursor: pointer;
-    transition: color 0.2s ease;
-
     &:hover {
       color: var(--el-color-primary);
-    }
-
-    .el-link {
-      font-size: 0.9em;
     }
   }
 }
 
-/* 锚点目录样式 - 添加进入动画 */
+// 目录样式
 .anchor-directory {
-  margin-top: 20px;
-  padding: 15px;
   background-color: var(--bg);
-  border-radius: 15px;
   border: 2px solid #ccc;
-  max-height: calc(100vh - 100px);
+  border-radius: 15px;
+  padding: 15px;
+  animation: directoryEnter 0.5s ease forwards;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); /* 使用缓动函数增强动画感 */
-
-  // 进入视口后的动画状态
-  &.directory-enter {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  // 新增：添加过渡效果，悬浮时更平滑
+  transition: all 0.3s ease;
 
   .directory-title {
-    font-size: 18px;
+    font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 15px;
     padding-bottom: 8px;
     border-bottom: 1px solid #eee;
-    color: var(--text);
-    display: flex;
-    align-items: center;
+    position: relative;
+    padding-left: 15px;
 
     &::before {
-      content: "";
-      display: inline-block;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
       width: 4px;
-      height: 16px;
       background-color: #1890ff;
-      margin-right: 8px;
       border-radius: 2px;
     }
   }
 
   .directory-content {
     max-height: 500px;
-    overflow-y: auto;
-    padding-right: 5px;
 
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: #ddd;
-      border-radius: 3px;
-    }
-    &::-webkit-scrollbar-track {
-      background-color: #f5f5f5;
-      border-radius: 3px;
-    }
-  }
-
-  .heading-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .heading-item {
-    padding: 8px 10px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    &:hover {
-      background-color: #f5f7fa;
-      transform: translateX(2px);
+    .heading-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
     }
 
-    &.active {
-      background-color: #e6f7ff;
-      color: #1890ff;
-      font-weight: 500;
-    }
+    .heading-item {
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.2s;
 
-    &.level-h1 {
-      padding-left: 10px;
-      font-weight: 500;
-    }
-    &.level-h2 {
-      padding-left: 20px;
-      font-size: 13.5px;
-    }
-    &.level-h3 {
-      padding-left: 30px;
-      font-size: 13px;
-      color: #555;
-    }
-    &.level-h4, &.level-h5, &.level-h6 {
-      padding-left: 40px;
-      font-size: 12.5px;
-      color: #666;
+      &:hover {
+        background-color: #f5f7fa;
+        transform: translateX(2px);
+      }
+
+      &.active {
+        background-color: #e6f7ff;
+        color: #1890ff;
+        font-weight: 500;
+      }
+
+      &.level-h1 { padding-left: 10px; }
+      &.level-h2 { padding-left: 20px; }
+      &.level-h3 { padding-left: 30px; }
+      &.level-h4 { padding-left: 40px; }
+      &.level-h5 { padding-left: 50px; }
+      &.level-h6 { padding-left: 60px; }
     }
   }
 
   .empty-tip {
     text-align: center;
-    padding: 20px 0;
+    padding: 20px;
     color: #999;
-    font-size: 14px;
-    background-color: var(--bg);
-    border-radius: 6px;
+    font-size: 0.9rem;
   }
 }
 
-/* 移动端适配 */
+// 目录进入动画
+@keyframes directoryEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 移动端适配
 @media screen and (max-width: 900px) {
-  .anchor-directory {
+  .login-container .el-container {
+    width: 95%;
+  }
+
+  .all-container {
+    flex-direction: column !important;
+  }
+
+  .el-aside, .el-main {
+    width: 100% !important;
+  }
+
+  .el-main {
     display: none;
   }
-}
 
-/* 加载状态 */
-.loading-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px;
+  // 移除移动端的max-height限制（原本就已删除，此处保留注释仅作提示）
+  .article-content {
+    // max-height: none !important; 【核心修改点2：此样式已无必要，可删除】
+  }
 
-  .el-spinner {
-    font-size: 24px;
+  .head_title {
+    height: 15rem;
+  }
+
+  .head_title_text .title {
+    font-size: 2rem;
   }
 }
 </style>
-
-
-
-

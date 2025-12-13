@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import QuillEditor from '@/components/QuillEditor.vue'
-import { articleCateListService, articleAddService, articleUpdateService } from '@/api/article.js'
+import { articleCateListService, articleUpdateService } from '@/api/article.js'
 import { useTokenStore } from '@/stores/token.js'
 
 const router = useRouter()
@@ -48,7 +48,8 @@ const uploadSuccess = (response) => {
 const uploadError = () => {
   ElMessage.error('封面上传失败，请重试')
 }
-
+import { useArticleStore } from '@/stores/articleStore'
+const articleStore = useArticleStore()
 // 提交文章（添加/编辑）
 const submitArticle = async (stateType) => {
   // 表单验证（保留原有验证逻辑，移除多余的tags验证）
@@ -64,11 +65,8 @@ const submitArticle = async (stateType) => {
     if (articleModel.value.id) {
       // 编辑文章
       await articleUpdateService(articleModel.value)
+      await articleStore.fetchArticleList()
       ElMessage.success('文章编辑成功')
-    } else {
-      // 添加文章
-      await articleAddService(articleModel.value)
-      ElMessage.success('文章添加成功')
     }
     // 返回文章列表页（统一路径）
     await router.push('/article/manage')
@@ -271,8 +269,8 @@ const handleClose = (path) => {  // 只接收路径参数
           <span  class="file-name" v-if="coverFileName">{{ coverFileName }}</span>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitArticle('已发布')">发布</el-button>
-          <el-button type="info" @click="submitArticle('草稿')">草稿</el-button>
+          <el-button type="primary" @click="submitArticle('已发布'),handleClose(router.currentRoute.value.path)">发布</el-button>
+          <el-button type="info" @click="submitArticle('草稿'),handleClose(router.currentRoute.value.path)">草稿</el-button>
           <el-button type="warning" @click="handleClose(router.currentRoute.value.path)">关闭</el-button>
         </el-form-item>
       </el-form>
